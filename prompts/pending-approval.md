@@ -40,3 +40,19 @@ GPT-4o
 **Submission Date:** 2025-02-04 07:30:42
 
 ---
+
+### A prompt for designing lecture slides on BJTs operation
+
+**Submitted by:** Ahmad Al-Kabbany
+
+**Use Case:** Curriculum Design
+
+**Description:**
+klnlkdccnlcdlknn
+
+**Model Name:**
+GPT
+
+**Submission Date:** 2025-02-04 13:47:00
+
+---
