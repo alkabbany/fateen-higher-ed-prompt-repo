@@ -25,38 +25,50 @@ jobs:
         fi
         echo "Extracted Prompt: $PROMPT_ENTRY"
 
-        # ✅ Extract the full department name (handles multi-word departments correctly)
-        DEPARTMENT=$(echo "$PROMPT_ENTRY" | sed -n 's/^.*\*\*Department: \*\*: \(.*\)$/\1/p' | xargs)
+        # ✅ Extract and clean department name
+        DEPARTMENT=$(echo "$PROMPT_ENTRY" | sed -n 's/^.*\*\*Department:\*\*: \(.*\)$/\1/p' | tr -d '\r' | xargs)
         echo "Extracted Department: '$DEPARTMENT'"
 
-        # ✅ Assign correct target file using regex matching for department names
-        if [[ "$DEPARTMENT" =~ ^Architectural\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-architectural.md"
-        elif [[ "$DEPARTMENT" =~ ^Computer\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-computer.md"
-        elif [[ "$DEPARTMENT" =~ ^Chemical\ and\ Petrochemical\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-chemical.md"
-        elif [[ "$DEPARTMENT" =~ ^Construction\ and\ Building\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-construction.md"
-        elif [[ "$DEPARTMENT" =~ ^Electronics\ and\ Communications\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-electronics.md"
-        elif [[ "$DEPARTMENT" =~ ^Electrical\ and\ Control\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-electrical.md"
-        elif [[ "$DEPARTMENT" =~ ^Industrial\ and\ Management\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-industrial.md"
-        elif [[ "$DEPARTMENT" =~ ^Marine\ and\ Offshore\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-marine.md"
-        elif [[ "$DEPARTMENT" =~ ^Mechanical\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-mechanical.md"
-        elif [[ "$DEPARTMENT" =~ ^Oil\ and\ Gas\ Engineering$ ]]; then
-          TARGET_FILE="prompts/engineering-oil.md"
-        else
-          TARGET_FILE="prompts/general.md"
-        fi
+        # ✅ Use case statement for exact department matching
+        case "$DEPARTMENT" in
+          "Architectural Engineering")
+            TARGET_FILE="prompts/engineering-architectural.md"
+            ;;
+          "Computer Engineering")
+            TARGET_FILE="prompts/engineering-computer.md"
+            ;;
+          "Chemical and Petrochemical Engineering")
+            TARGET_FILE="prompts/engineering-chemical.md"
+            ;;
+          "Construction and Building Engineering")
+            TARGET_FILE="prompts/engineering-construction.md"
+            ;;
+          "Electronics and Communications Engineering")
+            TARGET_FILE="prompts/engineering-electronics.md"
+            ;;
+          "Electrical and Control Engineering")
+            TARGET_FILE="prompts/engineering-electrical.md"
+            ;;
+          "Industrial and Management Engineering")
+            TARGET_FILE="prompts/engineering-industrial.md"
+            ;;
+          "Marine and Offshore Engineering")
+            TARGET_FILE="prompts/engineering-marine.md"
+            ;;
+          "Mechanical Engineering")
+            TARGET_FILE="prompts/engineering-mechanical.md"
+            ;;
+          "Oil and Gas Engineering")
+            TARGET_FILE="prompts/engineering-oil.md"
+            ;;
+          *)
+            TARGET_FILE="prompts/general.md"
+            ;;
+        esac
 
         echo "Moving prompt to: $TARGET_FILE"
 
-        # ✅ Remove the department line before saving the prompt (FIXED)
+        # ✅ Remove the department line before saving the prompt
         echo "$PROMPT_ENTRY" | sed '/\*\*Department:\*\*/d' >> "$TARGET_FILE"
 
         # ✅ Remove the prompt from pending-approval.md
