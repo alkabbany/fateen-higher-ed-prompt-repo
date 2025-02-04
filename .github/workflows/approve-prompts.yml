@@ -50,7 +50,8 @@ jobs:
           TARGET_FILE="prompts/general.md"
         fi
 
-        echo "$PROMPT_ENTRY" >> $TARGET_FILE
+        # ✅ Preserve multi-line formatting when appending
+        printf "%s\n" "$PROMPT_ENTRY" >> "$TARGET_FILE"
 
         # ✅ Use awk instead of sed to remove multi-line prompt safely
         awk 'BEGIN{found=0} /^### /{found=1} found && /^---$/{found=0; next} !found' prompts/pending-approval.md > temp.md && mv temp.md prompts/pending-approval.md
