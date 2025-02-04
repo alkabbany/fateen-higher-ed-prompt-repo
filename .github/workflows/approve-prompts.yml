@@ -53,7 +53,7 @@ jobs:
                "prompts/engineering-mechanical.md"
                "prompts/engineering-oil.md")
 
-        # ✅ Find the closest match (Improved Algorithm)
+        # ✅ Find the closest match (Balanced Algorithm)
         BEST_MATCH=""
         BEST_INDEX=0
         MIN_DISTANCE=99999
@@ -72,7 +72,7 @@ jobs:
                 print d, common
             }')
 
-            # ✅ Match must have a low distance and at least 2 common words
+            # ✅ Keep track of the best match based on word similarity
             if [[ $DISTANCE -lt $MIN_DISTANCE || ($DISTANCE -eq $MIN_DISTANCE && $COMMON_WORDS -gt $MAX_COMMON_WORDS) ]]; then
                 MIN_DISTANCE=$DISTANCE
                 MAX_COMMON_WORDS=$COMMON_WORDS
@@ -81,7 +81,7 @@ jobs:
             fi
         done
 
-        # ✅ Adjust the threshold to be more strict
+        # ✅ Adjust the threshold to be balanced
         if [[ $MIN_DISTANCE -lt 5 && $MAX_COMMON_WORDS -ge 1 ]]; then
             TARGET_FILE="${FILES[$BEST_INDEX]}"
         else
