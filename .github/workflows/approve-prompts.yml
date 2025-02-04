@@ -56,8 +56,8 @@ jobs:
 
         echo "Moving prompt to: $TARGET_FILE"
 
-        # ✅ Remove the department line before saving the prompt
-        echo "$PROMPT_ENTRY" | grep -v '\*\*Department\*\*' >> "$TARGET_FILE"
+        # ✅ Remove the department line before saving the prompt (FIXED)
+        echo "$PROMPT_ENTRY" | sed '/\*\*Department\*\*/d' >> "$TARGET_FILE"
 
         # ✅ Remove the prompt from pending-approval.md
         awk 'BEGIN{found=0} /^### /{found=1} found && /^---$/{found=0; next} !found' prompts/pending-approval.md > temp.md && mv temp.md prompts/pending-approval.md
