@@ -12,11 +12,11 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Check for Approval
-      if: github.event.comment.body == 'Approved'
+      if: github.event.comment.body == '✅ Approved'
       run: |
-        PROMPT_TITLE=$(awk '/^### / {print $2; exit}' prompts/pending-approval.md)
-        DEPARTMENT=$(awk '/\*\*Use Case\*\*: / {print $3; exit}' prompts/pending-approval.md)
-        
+        PROMPT_ENTRY=$(awk '/^### /,/---/' prompts/pending-approval.md | head -n 5)
+        DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk '/\*\*Use Case\*\*: / {print $3; exit}')
+
         if [[ "$DEPARTMENT" == "Architectural Engineering" ]]; then
           TARGET_FILE="prompts/engineering-architectural.md"
         elif [[ "$DEPARTMENT" == "Computer Engineering" ]]; then
@@ -41,10 +41,11 @@ jobs:
           TARGET_FILE="prompts/general.md"
         fi
 
-        grep -v "$PROMPT_TITLE" prompts/pending-approval.md > temp.md && mv temp.md prompts/pending-approval.md
-        echo "### $PROMPT_TITLE" >> $TARGET_FILE
+        echo "$PROMPT_ENTRY" >> $TARGET_FILE
+        sed -i "/$PROMPT_ENTRY/d" prompts/pending-approval.md
+
         git config --global user.name 'github-actions'
         git config --global user.email 'actions@github.com'
         git add prompts/*
-        git commit -m "Approved prompt $PROMPT_TITLE moved to $TARGET_FILE"
+        git commit -m "Approved prompt moved to $TARGET_FILE"
         git push
