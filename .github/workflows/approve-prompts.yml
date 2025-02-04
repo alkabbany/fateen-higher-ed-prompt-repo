@@ -25,7 +25,10 @@ jobs:
         fi
         echo "Extracted Prompt: $PROMPT_ENTRY"
 
-        DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk '/\*\*Use Case\*\*: / {print $3; exit}')
+        # ✅ Extract the department name correctly
+        DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk -F': ' '/\*\*Department\*\*/ {print $2; exit}' | xargs)
+
+        # ✅ Set correct target file
         if [[ "$DEPARTMENT" == "Architectural Engineering" ]]; then
           TARGET_FILE="prompts/engineering-architectural.md"
         elif [[ "$DEPARTMENT" == "Computer Engineering" ]]; then
@@ -50,8 +53,10 @@ jobs:
           TARGET_FILE="prompts/general.md"
         fi
 
-        # ✅ Preserve multi-line formatting when appending
-        printf "%s\n" "$PROMPT_ENTRY" >> "$TARGET_FILE"
+        echo "Moving prompt to: $TARGET_FILE"
+
+        # ✅ Remove the department line before saving the prompt
+        echo "$PROMPT_ENTRY" | awk '!/\*\*Department\*\*/' >> "$TARGET_FILE"
 
         # ✅ Remove the prompt from pending-approval.md
         awk 'BEGIN{found=0} /^### /{found=1} found && /^---$/{found=0; next} !found' prompts/pending-approval.md > temp.md && mv temp.md prompts/pending-approval.md
