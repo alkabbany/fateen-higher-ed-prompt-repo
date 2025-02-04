@@ -1,6 +1,8 @@
-# University Prompt Repository
+# Fateen: The HigherEd Prompt Repo
 
-Welcome to the faculty prompt repository. Browse department-specific prompts below:
+Fateen is a University Prompt Repository – A structured, moderated collection of AI prompts for faculty members and researchers across various faculties/schools/colleges and departments. This repository enables faculty to share, review, and refine AI-generated prompts for teaching, research, and academic productivity. 
+
+Please, browse department-specific prompts below:
 
 ## 🏗️ Architectural Engineering
 [View Prompts](prompts/engineering-architectural.md)
