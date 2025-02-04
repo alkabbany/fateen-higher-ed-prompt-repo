@@ -1,11 +1,11 @@
-name: Approve and Move Prompts
+name: Approve or Disapprove Prompts
 
 on:
   issue_comment:
     types: [created]
 
 jobs:
-  approve_prompt:
+  process_prompt:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -48,4 +48,18 @@ jobs:
         git config --global user.email 'actions@github.com'
         git add prompts/*
         git commit -m "Approved prompt moved to $TARGET_FILE"
+        git push
+
+    - name: Check for Disapproval
+      if: github.event.comment.body == '❌ Disapproved'
+      run: |
+        PROMPT_ENTRY=$(awk '/^### /,/---/' prompts/pending-approval.md | head -n 5)
+        
+        # Remove the disapproved prompt from pending-approval.md
+        sed -i "/$PROMPT_ENTRY/d" prompts/pending-approval.md
+
+        git config --global user.name 'github-actions'
+        git config --global user.email 'actions@github.com'
+        git add prompts/*
+        git commit -m "Disapproved prompt removed from pending-approval.md"
         git push
