@@ -54,3 +54,17 @@ erwrtrt
 GPT, DeepSeek
 
 ---
+
+### A prompt for designing lecture slides on BJTs operation
+
+**Submitted by:** Ahmad Al-Kabbany
+
+**Use Case:** Curriculum Design
+
+**Description:**
+dsfd
+
+**Model Name:**
+DeepSeek
+
+---
