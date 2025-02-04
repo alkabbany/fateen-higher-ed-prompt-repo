@@ -13,7 +13,7 @@ jobs:
 
     - name: Debug Prompt Extraction
       run: |
-        awk '/^### /,/^---$/' prompts/pending-approval.md | head -n 10
+        awk '/^### /,/^---$/' prompts/pending-approval.md | head -n 15
 
     - name: Check for Approval
       if: github.event.comment.body == '✅ Approved'
@@ -25,10 +25,12 @@ jobs:
         fi
         echo "Extracted Prompt: $PROMPT_ENTRY"
 
-        # ✅ Extract the department name correctly
-        DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk -F': ' '/\*\*Department\*\*/ {print $2; exit}' | xargs)
+        # ✅ Extract department name (handles multi-word departments)
+        DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk -F': ' '/\*\*Department\*\*/ {sub(/\r/,""); print substr($0, index($0,$2))}')
+        
+        echo "Extracted Department: '$DEPARTMENT'"
 
-        # ✅ Set correct target file
+        # ✅ Assign correct target file based on multi-word department names
         if [[ "$DEPARTMENT" == "Architectural Engineering" ]]; then
           TARGET_FILE="prompts/engineering-architectural.md"
         elif [[ "$DEPARTMENT" == "Computer Engineering" ]]; then
