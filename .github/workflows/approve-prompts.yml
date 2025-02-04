@@ -18,7 +18,7 @@ jobs:
     - name: Check for Approval
       if: github.event.comment.body == '✅ Approved'
       run: |
-        PROMPT_ENTRY=$(awk '/^### /,/^---$/' prompts/pending-approval.md | head -n 10)
+        PROMPT_ENTRY=$(awk '/^### /,/^---$/' prompts/pending-approval.md)
         if [[ -z "$PROMPT_ENTRY" ]]; then
           echo "Error: No prompt found! Check pending-approval.md format."
           exit 1
@@ -26,25 +26,25 @@ jobs:
         echo "Extracted Prompt: $PROMPT_ENTRY"
 
         DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk '/\*\*Use Case\*\*: / {print $3; exit}')
-        if [[ "$department" == "Architectural Engineering" ]]; then
+        if [[ "$DEPARTMENT" == "Architectural Engineering" ]]; then
           TARGET_FILE="prompts/engineering-architectural.md"
-        elif [[ "$department" == "Computer Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Computer Engineering" ]]; then
           TARGET_FILE="prompts/engineering-computer.md"
-        elif [[ "$department" == "Chemical and Petrochemical Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Chemical and Petrochemical Engineering" ]]; then
           TARGET_FILE="prompts/engineering-chemical.md"
-        elif [[ "$department" == "Construction and Building Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Construction and Building Engineering" ]]; then
           TARGET_FILE="prompts/engineering-construction.md"
-        elif [[ "$department" == "Electronics and Communications Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Electronics and Communications Engineering" ]]; then
           TARGET_FILE="prompts/engineering-electronics.md"
-        elif [[ "$department" == "Electrical and Control Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Electrical and Control Engineering" ]]; then
           TARGET_FILE="prompts/engineering-electrical.md"
-        elif [[ "$department" == "Industrial and Management Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Industrial and Management Engineering" ]]; then
           TARGET_FILE="prompts/engineering-industrial.md"
-        elif [[ "$department" == "Marine and Offshore Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Marine and Offshore Engineering" ]]; then
           TARGET_FILE="prompts/engineering-marine.md"
-        elif [[ "$department" == "Mechanical Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Mechanical Engineering" ]]; then
           TARGET_FILE="prompts/engineering-mechanical.md"
-        elif [[ "$department" == "Oil and Gas Engineering" ]]; then
+        elif [[ "$DEPARTMENT" == "Oil and Gas Engineering" ]]; then
           TARGET_FILE="prompts/engineering-oil.md"
         else
           TARGET_FILE="prompts/general.md"
@@ -53,7 +53,7 @@ jobs:
         # ✅ Preserve multi-line formatting when appending
         printf "%s\n" "$PROMPT_ENTRY" >> "$TARGET_FILE"
 
-        # ✅ Use awk instead of sed to remove multi-line prompt safely
+        # ✅ Remove the prompt from pending-approval.md
         awk 'BEGIN{found=0} /^### /{found=1} found && /^---$/{found=0; next} !found' prompts/pending-approval.md > temp.md && mv temp.md prompts/pending-approval.md
 
         git config --global user.name 'github-actions'
