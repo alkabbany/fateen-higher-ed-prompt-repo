@@ -53,14 +53,15 @@ jobs:
                "prompts/engineering-mechanical.md"
                "prompts/engineering-oil.md")
 
-        # ✅ Find the closest match
+        # ✅ Find the closest match (Improved Algorithm)
         BEST_MATCH=""
         BEST_INDEX=0
         MIN_DISTANCE=99999
+        MAX_COMMON_WORDS=0
 
         for i in "${!DEPARTMENTS[@]}"; do
             CURRENT_DEPT="${DEPARTMENTS[$i]}"
-            DISTANCE=$(echo "$DEPARTMENT $CURRENT_DEPT" | awk '{
+            read DISTANCE COMMON_WORDS <<< $(echo "$DEPARTMENT $CURRENT_DEPT" | awk '{
                 split(tolower($1), a, " ")
                 split(tolower($2), b, " ")
                 d = 0
@@ -68,18 +69,20 @@ jobs:
                 for (i in a) {
                     if (a[i] in b) { common++ } else { d++ }
                 }
-                print d - common
+                print d, common
             }')
 
-            if [[ $DISTANCE -lt $MIN_DISTANCE ]]; then
+            # ✅ Match must have a low distance and at least 2 common words
+            if [[ $DISTANCE -lt $MIN_DISTANCE || ($DISTANCE -eq $MIN_DISTANCE && $COMMON_WORDS -gt $MAX_COMMON_WORDS) ]]; then
                 MIN_DISTANCE=$DISTANCE
+                MAX_COMMON_WORDS=$COMMON_WORDS
                 BEST_MATCH=$CURRENT_DEPT
                 BEST_INDEX=$i
             fi
         done
 
-        # ✅ Adjust the threshold to improve matching accuracy
-        if [[ $MIN_DISTANCE -lt 5 ]]; then
+        # ✅ Adjust the threshold to be more strict
+        if [[ $MIN_DISTANCE -lt 3 && $MAX_COMMON_WORDS -ge 2 ]]; then
             TARGET_FILE="${FILES[$BEST_INDEX]}"
         else
             TARGET_FILE="prompts/general.md"
