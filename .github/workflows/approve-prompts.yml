@@ -100,9 +100,9 @@ jobs:
             TARGET_FILE="prompts/general.md"
         fi
 
-        echo "Final Assigned Department: '$BEST_MATCH'"
-        echo "Moving prompt to: $TARGET_FILE"
-
+        echo "DEBUG: Extracted Department: '$DEPARTMENT'"
+        echo "DEBUG: Closest Matched Department: '$BEST_MATCH' (Distance: $MIN_DISTANCE, Common Words: $MAX_COMMON_WORDS)'"
+        
         # ✅ Remove the department line before saving the prompt
         echo "$PROMPT_ENTRY" | sed '/\*\*Department:\*\*/d' >> "$TARGET_FILE"
 
