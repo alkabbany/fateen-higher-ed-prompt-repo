@@ -1,4 +1,4 @@
-name: Approve or Disapprove Prompts
+name: Approve and Move Prompts
 
 on:
   issue_comment:
@@ -14,7 +14,9 @@ jobs:
     - name: Check for Approval
       if: github.event.comment.body == '✅ Approved'
       run: |
-        PROMPT_ENTRY=$(awk '/^### /,/---/' prompts/pending-approval.md | head -n 5)
+        PROMPT_ENTRY=$(awk 'BEGIN{RS="---"} /^### /' prompts/pending-approval.md | head -n 1)
+        echo "Extracted Prompt: $PROMPT_ENTRY"
+
         DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk '/\*\*Use Case\*\*: / {print $3; exit}')
 
         if [[ "$DEPARTMENT" == "Architectural Engineering" ]]; then
@@ -42,7 +44,7 @@ jobs:
         fi
 
         echo "$PROMPT_ENTRY" >> $TARGET_FILE
-        sed -i "/$PROMPT_ENTRY/d" prompts/pending-approval.md
+        sed -i "\|$PROMPT_ENTRY|,/^---/d" prompts/pending-approval.md
 
         git config --global user.name 'github-actions'
         git config --global user.email 'actions@github.com'
@@ -53,10 +55,10 @@ jobs:
     - name: Check for Disapproval
       if: github.event.comment.body == '❌ Disapproved'
       run: |
-        PROMPT_ENTRY=$(awk '/^### /,/---/' prompts/pending-approval.md | head -n 5)
-        
-        # Remove the disapproved prompt from pending-approval.md
-        sed -i "/$PROMPT_ENTRY/d" prompts/pending-approval.md
+        PROMPT_ENTRY=$(awk 'BEGIN{RS="---"} /^### /' prompts/pending-approval.md | head -n 1)
+        echo "Disapproved Prompt: $PROMPT_ENTRY"
+
+        sed -i "\|$PROMPT_ENTRY|,/^---/d" prompts/pending-approval.md
 
         git config --global user.name 'github-actions'
         git config --global user.email 'actions@github.com'
