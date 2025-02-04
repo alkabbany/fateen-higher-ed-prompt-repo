@@ -14,7 +14,7 @@ jobs:
     - name: Check for Approval
       if: github.event.comment.body == '✅ Approved'
       run: |
-        PROMPT_ENTRY=$(awk 'BEGIN{RS="---"} /^### /' prompts/pending-approval.md | head -n 1)
+        PROMPT_ENTRY=$(awk '/^### /,/^---$/' prompts/pending-approval.md | head -n 10)
         echo "Extracted Prompt: $PROMPT_ENTRY"
 
         DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk '/\*\*Use Case\*\*: / {print $3; exit}')
