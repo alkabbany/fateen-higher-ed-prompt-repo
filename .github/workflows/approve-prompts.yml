@@ -82,7 +82,7 @@ jobs:
         done
 
         # ✅ Adjust the threshold to be more strict
-        if [[ $MIN_DISTANCE -lt 3 && $MAX_COMMON_WORDS -ge 2 ]]; then
+        if [[ $MIN_DISTANCE -lt 5 && $MAX_COMMON_WORDS -ge 1 ]]; then
             TARGET_FILE="${FILES[$BEST_INDEX]}"
         else
             TARGET_FILE="prompts/general.md"
