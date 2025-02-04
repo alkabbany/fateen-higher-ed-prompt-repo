@@ -64,10 +64,11 @@ jobs:
                 split(tolower($1), a, " ")
                 split(tolower($2), b, " ")
                 d = 0
+                common = 0
                 for (i in a) {
-                    if (!(a[i] in b)) d++
+                    if (a[i] in b) { common++ } else { d++ }
                 }
-                print d
+                print d - common
             }')
 
             if [[ $DISTANCE -lt $MIN_DISTANCE ]]; then
@@ -77,8 +78,8 @@ jobs:
             fi
         done
 
-        # ✅ Assign the best match or fallback to general.md
-        if [[ $MIN_DISTANCE -lt 3 ]]; then
+        # ✅ Adjust the threshold to improve matching accuracy
+        if [[ $MIN_DISTANCE -lt 5 ]]; then
             TARGET_FILE="${FILES[$BEST_INDEX]}"
         else
             TARGET_FILE="prompts/general.md"
