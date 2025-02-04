@@ -26,7 +26,7 @@ jobs:
         echo "Extracted Prompt: $PROMPT_ENTRY"
 
         # ✅ Extract the full department name (handles multi-word departments correctly)
-        DEPARTMENT=$(echo "$PROMPT_ENTRY" | sed -n 's/^.*\*\*Department:\*\*: \(.*\)$/\1/p' | xargs)
+        DEPARTMENT=$(echo "$PROMPT_ENTRY" | sed -n 's/^.*\*\*Department: \*\*: \(.*\)$/\1/p' | xargs)
         echo "Extracted Department: '$DEPARTMENT'"
 
         # ✅ Assign correct target file using regex matching for department names
