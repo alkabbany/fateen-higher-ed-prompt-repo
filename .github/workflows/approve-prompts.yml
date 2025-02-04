@@ -26,25 +26,25 @@ jobs:
         echo "Extracted Prompt: $PROMPT_ENTRY"
 
         DEPARTMENT=$(echo "$PROMPT_ENTRY" | awk '/\*\*Use Case\*\*: / {print $3; exit}')
-        if [[ "$Department" == "Architectural Engineering" ]]; then
+        if [[ "$department" == "Architectural Engineering" ]]; then
           TARGET_FILE="prompts/engineering-architectural.md"
-        elif [[ "$Department" == "Computer Engineering" ]]; then
+        elif [[ "$department" == "Computer Engineering" ]]; then
           TARGET_FILE="prompts/engineering-computer.md"
-        elif [[ "$Department" == "Chemical and Petrochemical Engineering" ]]; then
+        elif [[ "$department" == "Chemical and Petrochemical Engineering" ]]; then
           TARGET_FILE="prompts/engineering-chemical.md"
-        elif [[ "$Department" == "Construction and Building Engineering" ]]; then
+        elif [[ "$department" == "Construction and Building Engineering" ]]; then
           TARGET_FILE="prompts/engineering-construction.md"
-        elif [[ "$Department" == "Electronics and Communications Engineering" ]]; then
+        elif [[ "$department" == "Electronics and Communications Engineering" ]]; then
           TARGET_FILE="prompts/engineering-electronics.md"
-        elif [[ "$Department" == "Electrical and Control Engineering" ]]; then
+        elif [[ "$department" == "Electrical and Control Engineering" ]]; then
           TARGET_FILE="prompts/engineering-electrical.md"
-        elif [[ "$Department" == "Industrial and Management Engineering" ]]; then
+        elif [[ "$department" == "Industrial and Management Engineering" ]]; then
           TARGET_FILE="prompts/engineering-industrial.md"
-        elif [[ "$Department" == "Marine and Offshore Engineering" ]]; then
+        elif [[ "$department" == "Marine and Offshore Engineering" ]]; then
           TARGET_FILE="prompts/engineering-marine.md"
-        elif [[ "$Department" == "Mechanical Engineering" ]]; then
+        elif [[ "$department" == "Mechanical Engineering" ]]; then
           TARGET_FILE="prompts/engineering-mechanical.md"
-        elif [[ "$Department" == "Oil and Gas Engineering" ]]; then
+        elif [[ "$department" == "Oil and Gas Engineering" ]]; then
           TARGET_FILE="prompts/engineering-oil.md"
         else
           TARGET_FILE="prompts/general.md"
