@@ -20,14 +20,20 @@ jobs:
       run: |
         PROMPT_ENTRY=$(awk '/^### /,/^---$/' prompts/pending-approval.md)
         if [[ -z "$PROMPT_ENTRY" ]]; then
-          echo "Error: No prompt found! Check pending-approval.md format."
+          echo "❌ ERROR: No prompt found! Check pending-approval.md format."
           exit 1
         fi
-        echo "Extracted Prompt: $PROMPT_ENTRY"
+        echo "✅ Extracted Prompt: $PROMPT_ENTRY"
 
         # ✅ Extract and clean department name
-        DEPARTMENT=$(echo "$PROMPT_ENTRY" | sed -n 's/^.*\*\*Department:\*\*: \(.*\)$/\1/p' | tr -d '\r' | xargs)
-        echo "DEBUG: Extracted Department: '$DEPARTMENT'"
+        DEPARTMENT=$(echo "$PROMPT_ENTRY" | grep -oP '(?<=\*\*Department:\*\* ).*' | tr -d '\r' | xargs)
+        
+        if [[ -z "$DEPARTMENT" ]]; then
+            echo "❌ ERROR: Failed to extract department from the prompt! Check the format of pending-approval.md."
+            exit 1
+        fi
+
+        echo "✅ DEBUG: Extracted Department: '$DEPARTMENT'"
 
         # ✅ Define list of valid department names
         DEPARTMENTS=("Architectural Engineering"
@@ -53,56 +59,23 @@ jobs:
                "prompts/engineering-mechanical.md"
                "prompts/engineering-oil.md")
 
-        # ✅ Find the closest match (Balanced Algorithm)
-        BEST_MATCH=""
-        BEST_INDEX=0
-        MIN_DISTANCE=99999
-        MAX_COMMON_WORDS=0
-
-        for i in "${!DEPARTMENTS[@]}"; do
-            CURRENT_DEPT="${DEPARTMENTS[$i]}"
-            read DISTANCE COMMON_WORDS <<< $(echo "$DEPARTMENT $CURRENT_DEPT" | awk '{
-                split(tolower($1), a, " ")
-                split(tolower($2), b, " ")
-                d = 0
-                common = 0
-                for (i in a) {
-                    if (a[i] in b) { common++ } else { d++ }
-                }
-                print d, common
-            }')
-
-            # ✅ Keep track of the best match based on word similarity
-            if [[ $DISTANCE -lt $MIN_DISTANCE || ($DISTANCE -eq $MIN_DISTANCE && $COMMON_WORDS -gt $MAX_COMMON_WORDS) ]]; then
-                MIN_DISTANCE=$DISTANCE
-                MAX_COMMON_WORDS=$COMMON_WORDS
-                BEST_MATCH=$CURRENT_DEPT
-                BEST_INDEX=$i
-            fi
-        done
-
-        # ✅ Debug output for matching logic
-        echo "DEBUG: Closest Matched Department: '$BEST_MATCH' (Distance: $MIN_DISTANCE, Common Words: $MAX_COMMON_WORDS)"
-
         # ✅ First, check for an exact match
         for i in "${!DEPARTMENTS[@]}"; do
             if [[ "$DEPARTMENT" == "${DEPARTMENTS[$i]}" ]]; then
                 TARGET_FILE="${FILES[$i]}"
-                echo "DEBUG: Exact Match Found - Moving to $TARGET_FILE"
+                echo "✅ DEBUG: Exact Match Found - Moving to $TARGET_FILE"
                 break
             fi
         done
 
-        # ✅ If no exact match, use closest match
-        if [[ -z "$TARGET_FILE" && $MIN_DISTANCE -lt 5 && $MAX_COMMON_WORDS -ge 1 ]]; then
-            TARGET_FILE="${FILES[$BEST_INDEX]}"
-        else
+        # ✅ If no exact match, default to general.md
+        if [[ -z "$TARGET_FILE" ]]; then
             TARGET_FILE="prompts/general.md"
         fi
 
-        echo "DEBUG: Extracted Department: '$DEPARTMENT'"
-        echo "DEBUG: Closest Matched Department: '$BEST_MATCH' (Distance: $MIN_DISTANCE, Common Words: $MAX_COMMON_WORDS)'"
-        
+        echo "✅ Final Assigned Department: '$DEPARTMENT'"
+        echo "✅ Moving prompt to: $TARGET_FILE"
+
         # ✅ Remove the department line before saving the prompt
         echo "$PROMPT_ENTRY" | sed '/\*\*Department:\*\*/d' >> "$TARGET_FILE"
 
