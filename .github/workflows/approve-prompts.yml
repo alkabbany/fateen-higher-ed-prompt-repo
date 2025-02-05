@@ -25,8 +25,8 @@ jobs:
         fi
         echo "✅ Extracted Prompt: $PROMPT_ENTRY"
 
-        # ✅ Extract and clean department name
-        DEPARTMENT=$(echo "$PROMPT_ENTRY" | grep -oP '(?<=\*\*Department:\*\* ).*' | tr -d '\r' | xargs)
+        # ✅ Extract and clean department name (Fix for repetition)
+        DEPARTMENT=$(echo "$PROMPT_ENTRY" | grep -oP '(?<=\*\*Department:\*\* )[^*]+' | head -n 1 | tr -d '\r' | xargs)
         
         if [[ -z "$DEPARTMENT" ]]; then
             echo "❌ ERROR: Failed to extract department from the prompt! Check the format of pending-approval.md."
